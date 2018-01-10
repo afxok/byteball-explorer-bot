@@ -1,0 +1,28 @@
+{
+  "name": "byteball-explorer-bot",
+  "description": "Explorer Bot",
+  "author": "afxok",
+  "version": "0.0.1",
+  "main": "start.js",
+  "keywords": [
+    "byteball",
+    "explorer"
+  ],
+  "license": "MIT",
+  "repository": {
+    "url": "git://github.com/afxok/byteball-explorer-bot.git",
+    "type": "git"
+  },
+  "bugs": {
+    "url": "https://github.com/afxok/byteball-explorer-bot/issues"
+  },
+  "dependencies": {
+    "async": "*",
+    "moment": "*",
+    "byteballcore": "git+https://github.com/byteball/byteballcore.git",
+    "headless-byteball": "git+https://github.com/byteball/headless-byteball.git",
+    "byteball-explorer": "git+https://github.com/byteball/byteball-explorer.git",
+    "bitcore-lib": "^0.13.14",
+    "bitcore-mnemonic": "~1.0.0"
+  }
+}
