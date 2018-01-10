@@ -20,6 +20,5 @@ WORKDIR /home/byteball/byteball-explorer-bot
 EXPOSE 6611 
 
 #ENTRYPOINT ["/sbin/tini", "--"]
-#CMD [ "/bin/sh", "-c", "node explorer-bot.js 2>> /home/byteball/.config/byteball-explorer-bot/error.log" ]
-CMD [ "/bin/sh", "-c", "node explorer-bot.js" ]
+CMD [ "/bin/sh", "-c", "node explorer-bot.js 2>> /home/byteball/.config/byteball-explorer-bot/error.log" ]
 
