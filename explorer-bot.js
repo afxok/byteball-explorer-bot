@@ -1,14 +1,11 @@
 /*jslint node: true */
 "use strict";
 var util = require('util');
-var constants = require('byteballcore/constants.js');
-var conf = require('byteballcore/conf.js');
 var db = require('byteballcore/db.js');
 var eventBus = require('byteballcore/event_bus.js');
 var addressUtil = require('byteball-explorer/controllers/address.js');
 var unitUtil = require('byteball-explorer/controllers/units.js');
 var validationUtils = require('byteballcore/validation_utils.js');
-var headlessWallet = require('headless-byteball');
 var moment = require('moment');
 
 var UNIT_REGEX = /\b([A-Za-z0-9+/]{43}=)(?:\b|$)/g;
@@ -304,6 +301,7 @@ function setupChatEventHandlers() {
 exports.setupChatEventHandlers = setupChatEventHandlers;
 
 if (require.main === module) {
+	var headlessWallet = require('headless-byteball');
 	headlessWallet.setupChatEventHandlers();
 	setupChatEventHandlers();
 }
