@@ -18,7 +18,7 @@ node start.js
 
 |Byteball Wallet QR Code|Pairing Code Link|
 |-----------------------|-----------------|
-|![Explorer_Bot_QR_Code](explorer-bot-qr-code.jpg){:width="250px"}|[click here](byteball:AgCIAZy32lWRc/OQZRiVg4hSmw0sw4ga3P6qkBv/nAPo@byteball.org/bb#0000)|
+|![Explorer_Bot_QR_Code](explorer-bot-qr-code.png)|[click here](byteball:AgCIAZy32lWRc/OQZRiVg4hSmw0sw4ga3P6qkBv/nAPo@byteball.org/bb#0000)|
 
 ## Bot commands
 
