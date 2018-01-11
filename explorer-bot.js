@@ -198,7 +198,7 @@ function setSyncProgress() {
 }
 
 
-function handlePairing(fromAddress){
+function handlePairing(fromAddress,pairingSecret){
 	var device = require('byteballcore/device.js');
         sessions[fromAddress] = {};
 	device.sendMessageToDevice(fromAddress, 'text', welcomeText);
@@ -265,9 +265,9 @@ function handleText(fromAddress, text){
 			setSyncProgress();
 			device.sendMessageToDevice(fromAddress, 'text',
 			    "Status:\n" + 
-                            catchupStatus.percentComplete + "\n" +
-                            catchupStatus.lastUnitTimestamp + "\n" +
-                            catchupStatus.eta + " ETA\n");
+                            "\tComplete: " + catchupStatus.percentComplete + "\n" +
+                            "\tLast unit: " + catchupStatus.lastUnitTimestamp + "\n" +
+                            "\tETA: " + catchupStatus.eta + "\n");
 			break;
 		case /^help$/.test(command):
 			device.sendMessageToDevice(fromAddress, 'text', welcomeText);
@@ -277,7 +277,7 @@ function handleText(fromAddress, text){
 	}
 }
 
-function setupChatEventHandlers() {
+function setupChatEventHandlers(listenOnText) {
 	eventBus.on('catching_up_started', function(){
 	    catchupStatus.startTime = Date.now();
 	    setSyncProgress();
@@ -286,24 +286,26 @@ function setupChatEventHandlers() {
 	    setSyncProgress();
 	});
 	eventBus.on('paired', function(fromAddress){
-		console.log('paired '+fromAddress);
-		handlePairing(fromAddress);
+            console.log('paired '+fromAddress);
+	    handlePairing(fromAddress);
 	});
-	eventBus.on('text', function(fromAddress, text){
-	     console.log('text from '+fromAddress+': '+text);
-	     handleText(fromAddress, text);
-	});
-	eventBus.on('headless_wallet_ready', function(){
-});}
+
+        if (listenOnText) {
+	    eventBus.on('text', function(fromAddress, text){
+	        handleText(fromAddress, text);
+	    });
+	}
+}
 
 // ----------------------------------------------------------------
 
 exports.setupChatEventHandlers = setupChatEventHandlers;
+exports.handleText = handleText;
 
 if (require.main === module) {
-	var headlessWallet = require('headless-byteball');
-	headlessWallet.setupChatEventHandlers();
-	setupChatEventHandlers();
+    var headlessWallet = require('headless-byteball');
+    headlessWallet.setupChatEventHandlers();
+    setupChatEventHandlers(true);
 }
 
 
