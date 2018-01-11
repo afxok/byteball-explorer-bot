@@ -35,7 +35,7 @@ var catchupStatus = {
 var sessions = {};
 
 function getUnitCommand(unit) {
-    var cmd = '[' + unit.substr(0,12) + '...' + unit.substr(31) + '](command:' + unit +')';
+    var cmd = '[' + unit.substr(0,12) + '...' + unit.substr(37) + '](command:' + unit +')';
     return cmd;
 }
 
@@ -181,7 +181,7 @@ function formatAddressResponse(a,allUnspent) {
     if (a.transactions !== undefined) {
         for (var k in a.transactions) {
             var tran = a.transactions[k];
-            trans = trans + 'Unit: ' + getUnitCommand(tran.unit) + "(" + moment(tran.date).format('DD.MM.YYYY HH:mm:ss') + ")\n";
+            trans = trans + getUnitCommand(tran.unit) + " (" + moment(tran.date).format('DD.MM.YYYY HH:mm:ss') + ")\n";
 	    /*
             tran.from.forEach(function(from) {
             });
