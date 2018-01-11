@@ -10,7 +10,20 @@ var moment = require('moment');
 
 var UNIT_REGEX = /\b([A-Za-z0-9+/]{43}=)(?:\b|$)/g;
 var ADDR_REGEX = /\b([2-7A-Z]{32})(?:\b|$)/g;
-var welcomeText = "Commands:\n\t- [unit]\n\t- [address]\n\t- last\n\t- status";
+var welcomeText = "Explorer Bot: chatbot interface for the Byteball DAG\n\n" +
+                  "available commands:\n" +
+                  "\t- [help](command:help): this page\n" +
+                  "\t- [unit]: select any highlighted unit for info\n" +
+                  "\t- [address]: select any highlighted address for info\n" +
+                  "\t- [last](command:last): show last unit received\n" +
+                  "\t- [status](command:status): show wallet syncing status\n\n" +
+                  "Upcomming Features:\n" +
+                  "- Support for more than message payload types\n" +
+                  "- Streaming units\n" +
+                  "- Query syntax\n\n" +
+                  "More information:\n" +
+                  "https://github.com/afxok/byteball-explorer-bot\n" +
+                  "Slack: #afxok";
 
 var catchupStatus = {
         balls: -1,
@@ -115,7 +128,7 @@ function formatUnitResponse(u) {
                     for (var i = 0; i < u.outputsUnit[asset].length; i ++) {
                         var output = u.outputsUnit[asset][i];
                         // outputsToken = output.amount + ' to ' + output.address + '\n(spent in ' + output.spent + ')\n';
-                        outputsToken = outputsToken + '\t' + output.amount + ' to ' + output.address + '\n';
+                        outputsToken = outputsToken + '\t' + output.amount + ' to ["' + output.address + '"](command:"' + output.address + '")\n';
                     }
                     var messageToken = [messageFormat,inputsToken,outputsToken];
                     messagesToken = util.format.apply(null,messageToken) + '\n';
@@ -138,7 +151,7 @@ function formatUnitResponse(u) {
     return resp;
 }
 
-function formatAddressResponse(a) {
+function formatAddressResponse(a,allUnspent) {
     var formats = [];
     formats.push('Address: ["%s"](command:"%s")\n');
     formats.push('Definition:');
@@ -153,9 +166,13 @@ function formatAddressResponse(a) {
 
     var unspent = "";
     if (a.unspent !== undefined) {
-        var numUnspent = Math.min(a.unspent.length,10);
+        var maxUnspent = (allUnspent && allUnspent === true) ? a.unspent.length : 10;
+        var numUnspent = Math.min(a.unspent.length,maxUnspent);
         for (var i = 0; i < numUnspent; i++) {
     	    unspent = unspent + '\t' + getUnitCommand(a.unspent[i].unit) + ' (' + a.unspent[i].amount + ' bytes)\n';
+        }
+        if (numUnspent < a.unspent.length) {
+            unspent = unspent + '\t[(...show all unspent)](command:"' + a.address + '" showAllUnspent) l:' + a.unspent.length + ' mu:' + maxUnspent + ' nu:' + numUnspent + '\n';
         }
     }
 
@@ -210,9 +227,9 @@ function handleText(fromAddress, text){
 	text = text.trim();
 	var fields = text.split(/ /);
 	var command = fields[0].trim().toLowerCase();
-	// var params =['',''];
-	// if (fields.length > 1) params[0] = fields[1].trim();
-	// if (fields.length > 2) params[1] = fields[2].trim();
+	var params =['',''];
+	if (fields.length > 1) params[0] = fields[1].trim();
+	if (fields.length > 2) params[1] = fields[2].trim();
 
 	var device = require('byteballcore/device.js');
 	switch(true){
@@ -235,7 +252,8 @@ function handleText(fromAddress, text){
                                 balance: b,
                                 transactions: trans
                             };
-			    var msg = (ai) ? formatAddressResponse(ai) : 'No info for ' + addr;
+                            var showAllUnspent = (params[0] && params[0] === 'showAllUnspent');
+			    var msg = (ai) ? formatAddressResponse(ai,showAllUnspent) : 'No info for ' + addr;
 			    device.sendMessageToDevice(fromAddress, 'text', msg);
 			});
 			break;
