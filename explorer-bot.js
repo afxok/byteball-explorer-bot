@@ -159,6 +159,7 @@ function formatAddressResponse(a,allUnspent) {
     formats.push('Unspent:');
     formats.push("%s\n");
     formats.push('Transactions:');
+    formats.push("%s\n");
     formats.push('Balance: %s bytes');
     var format = formats.join('\n');
 
@@ -176,8 +177,22 @@ function formatAddressResponse(a,allUnspent) {
         }
     }
 
+    var trans = "";
+    if (a.transactions !== undefined) {
+        for (var k in a.transactions) {
+            var tran = a.transactions[k];
+            trans = trans + 'Unit: ' + getUnitCommand(tran.unit) + "(" + moment(tran.date).format('DD.MM.YYYY HH:mm:ss') + ")\n";
+	    /*
+            tran.from.forEach(function(from) {
+            });
+            for (var kk in tran.to) {
+            }
+	    */
+        }
+    }
+
     var bytes = (a.balance !== undefined) ? a.balance.bytes : "";
-    var tokens = [format,a.address,a.address,definitionToken,unspent, bytes];
+    var tokens = [format,a.address,a.address,definitionToken,unspent,trans,bytes];
 
     var resp = util.format.apply(null,tokens) + '\n';
 
@@ -234,7 +249,6 @@ function handleText(fromAddress, text){
 	var device = require('byteballcore/device.js');
 	switch(true){
 		case UNIT_REGEX.test(text):
-			console.log('unit: ' + text);
                         var u = text.match(UNIT_REGEX)[0];
 			unitUtil.getInfoOnUnit(u, function(oi) {
 			    var msg = (oi) ? formatUnitResponse(oi) : 'No info for ' + u;
@@ -242,7 +256,6 @@ function handleText(fromAddress, text){
 			});
 			break;
 		case ADDR_REGEX.test(text):
-			console.log('addr: ' + text);
 			var addr = text.match(ADDR_REGEX)[0];
 			addressUtil.getAddressInfo(addr, function(trans,us,b,end,def,lastInputsRowId,lastOutpusRowId) {
                             var ai = {
