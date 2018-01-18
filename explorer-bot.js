@@ -245,10 +245,12 @@ function handleText(fromAddress, text){
 	var params =['',''];
 	if (fields.length > 1) params[0] = fields[1].trim();
 	if (fields.length > 2) params[1] = fields[2].trim();
+	console.log("explorer command: " + command + ' ' + params[0] + ' ' + params[1]);
 
 	var device = require('byteballcore/device.js');
 	switch(true){
 		case UNIT_REGEX.test(text):
+			console.log('unit: ' + text + ' to ' + fromAddress);
                         var u = text.match(UNIT_REGEX)[0];
 			unitUtil.getInfoOnUnit(u, function(oi) {
 			    var msg = (oi) ? formatUnitResponse(oi) : 'No info for ' + u;
@@ -256,6 +258,7 @@ function handleText(fromAddress, text){
 			});
 			break;
 		case ADDR_REGEX.test(text):
+			console.log('addr: ' + text + ' to ' + fromAddress);
 			var addr = text.match(ADDR_REGEX)[0];
 			addressUtil.getAddressInfo(addr, function(trans,us,b,end,def,lastInputsRowId,lastOutpusRowId) {
                             var ai = {
@@ -283,6 +286,7 @@ function handleText(fromAddress, text){
 			break;
 */
 		case /^last$/.test(command):
+			console.log('executing last to ' + fromAddress);
 			db.query("SELECT unit FROM units ORDER BY rowid DESC LIMIT 1", function(rows) {
 			    if (rows.length === 1) {
 				unitUtil.getInfoOnUnit(rows[0].unit, function(oi) {
@@ -293,6 +297,7 @@ function handleText(fromAddress, text){
 			});
 			break;
 		case /^status$/.test(command):
+			console.log('executing status to ' + fromAddress);
 			setSyncProgress();
 			device.sendMessageToDevice(fromAddress, 'text',
 			    "Status:\n" + 
@@ -301,6 +306,7 @@ function handleText(fromAddress, text){
                             "\tETA: " + catchupStatus.eta + "\n");
 			break;
 		case /^help$/.test(command):
+			console.log('executing help to ' + fromAddress);
 			device.sendMessageToDevice(fromAddress, 'text', welcomeText);
 			break;
 		default:
